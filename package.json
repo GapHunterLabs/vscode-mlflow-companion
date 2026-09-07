@@ -1,0 +1,67 @@
+{
+  "name": "mlflow-companion",
+  "displayName": "MLflow Companion",
+  "description": "Browses local MLflow tracking-store runs (params, metrics, tags) in a sidebar tree, reading mlruns/ directly from disk. No data leaves your editor.",
+  "version": "0.1.0",
+  "publisher": "GapHunterLabs",
+  "icon": "images/icon.png",
+  "license": "Apache-2.0",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Linters"
+  ],
+  "keywords": [
+    "mlflow",    "machine-learning",    "mlops",    "experiment-tracking"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GapHunterLabs/vscode-mlflow-companion.git"
+  },
+  "bugs": {
+    "url": "https://github.com/GapHunterLabs/vscode-mlflow-companion/issues"
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "views": {
+      "explorer": [
+        {
+          "id": "mlflowCompanion.runs",
+          "name": "MLflow Runs"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "mlflowCompanion.refresh",
+        "title": "MLflow Companion: Refresh",
+        "icon": "$(refresh)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "mlflowCompanion.refresh",
+          "when": "view == mlflowCompanion.runs",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -w -p ./",
+    "test": "tsc -p ./ && node --test \"out/test/**/*.test.js\""
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.2"
+  }
+}
