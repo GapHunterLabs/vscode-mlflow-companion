@@ -2,7 +2,7 @@
   "name": "mlflow-companion",
   "displayName": "MLflow Companion",
   "description": "Browses local MLflow tracking-store runs (params, metrics, tags) in a sidebar tree, reading mlruns/ directly from disk. No data leaves your editor.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "GapHunterLabs",
   "icon": "images/icon.png",
   "license": "Apache-2.0",
