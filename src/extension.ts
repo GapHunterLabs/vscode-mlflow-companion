@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { parseMetaYaml, parseMetricFile, buildRun, latestMetricValue, type MlflowRun, type MetricPoint } from './mlrunsParser';
+import { recordHit } from './reviewPrompt';
 
 async function readTextFile(uri: vscode.Uri): Promise<string> {
   return Buffer.from(await vscode.workspace.fs.readFile(uri)).toString('utf8');
@@ -95,6 +96,11 @@ class MlflowTreeProvider implements vscode.TreeDataProvider<Node> {
     this.onDidChangeTreeDataEmitter.fire();
   }
 
+  /** The run IDs currently loaded, used to gauge real usage for the review prompt. */
+  getRunIds(): string[] {
+    return this.experiments.flatMap((e) => e.runs.map((r) => r.runId));
+  }
+
   getTreeItem(element: Node): vscode.TreeItem {
     if ('run' in element) {
       const item = new vscode.TreeItem(
@@ -149,12 +155,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   const provider = new MlflowTreeProvider(mlrunsUri);
   const treeView = vscode.window.createTreeView('mlflowCompanion.runs', { treeDataProvider: provider });
   context.subscriptions.push(treeView);
+  const recordUsage = (): void => provider.getRunIds().forEach((runId) => recordHit(context, runId));
   await provider.refresh();
+  recordUsage();
 
   if (mlrunsUri) {
     const watcher = vscode.workspace.createFileSystemWatcher(new vscode.RelativePattern(mlrunsUri, '**/*'));
     context.subscriptions.push(watcher);
-    const refresh = () => void provider.refresh();
+    const refresh = () => void provider.refresh().then(recordUsage);
     watcher.onDidCreate(refresh);
     watcher.onDidChange(refresh);
     watcher.onDidDelete(refresh);
